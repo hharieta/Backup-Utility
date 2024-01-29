@@ -42,3 +42,33 @@ Copy code
 This will run the script every day at 2:00 AM. Adjust the values to suit your specific needs.
 Remember to customize the paths and scheduling according to your specific requirements and setup. This script is a basic example, and you can customize it to fit your environment and needs.
 
+
+
+
+```bash
+
+#!/bin/bash
+server="ubuntu@ec2-18-206-154-55.compute-1.amazonaws.com"
+current_user="$USER"
+# Directorio de origen que deseas respaldar 
+origen="$HOME/Documents/page"
+# Directorio de destino donde se almacenarán las copias de seguridad 
+destino="/home/ubuntu/respaldo"
+# Nombre del archivo de copia de seguridad con marca de tiempo 
+archivo_respaldo="${current_user}_$(date +\%Y\%m\%d_\%H\%M\%S).tar.gz"
+# Comprimir y copiar los archivos de origen al directorio de destino 
+tar -czvf "$archivo_respaldo" "$origen"
+echo "${server}:${destino}" 
+# Comprobar si la copia de seguridad se realizó con éxito 
+if [ $? -eq 0 ]; then
+  echo -e "Backup Succesfuled: $archivo_respaldo" 
+  sleep 2
+  echo -e "Sending backup to server: $server ..." 
+  scp -i "$HOME/Documents/Utmp01.pem" "$archivo_respaldo" "${server}:${destino}"
+else
+  echo -e "Error al realizar la copia de seguridad." 
+fi
+
+```
+
+
